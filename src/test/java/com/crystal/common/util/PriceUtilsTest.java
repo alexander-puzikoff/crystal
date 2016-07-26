@@ -39,11 +39,21 @@ public class PriceUtilsTest {
         PriceUtils.correctInterceptedPrices(oldPrice, newPrice);
         Assert.assertTrue(oldPrice.getEndsAt().equals(newPrice.getStartsFrom()));
         Assert.assertTrue(oldPrice.getStartsFrom().equals(oldSt));
-        Price newPrice2 = new Price("14", 3, 1, dateFormat.parse("2011-11-13 13:30:00"), dateFormat.parse("2011-12-03 13:30:00"), 129900);
+        Price newPrice2 = new Price("14", 3, 1, dateFormat.parse("2011-11-13 13:30:00"), dateFormat.parse("2011-11-23 13:30:00"), 32900);
+        PriceUtils.correctInterceptedPrices(newPrice, newPrice2);
+        Assert.assertTrue(newPrice.getStartsFrom().equals(newPrice2.getEndsAt()));
+
     }
 
     @Test
     public void testSplitPrices() throws Exception {
-
+        Date oldSt = dateFormat.parse("2011-11-13 23:30:00");
+        Price outsidePrice = new Price("14", 3, 1, oldSt, dateFormat.parse("2011-12-14 02:00:00"), 149900);
+        Price insidePrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"), dateFormat.parse("2011-12-03 13:30:00"), 129900);
+        Price copyInside = new Price(insidePrice), copyOutside = new Price(outsidePrice);
+        Price resultedPrice = PriceUtils.splitPrices(insidePrice, outsidePrice);
+        Assert.assertTrue(resultedPrice.getStartsFrom().equals(copyInside.getEndsAt()));
+        Assert.assertTrue(resultedPrice.getEndsAt().equals(copyOutside.getEndsAt()));
+        Assert.assertTrue(outsidePrice.getEndsAt().equals(copyInside.getStartsFrom()));
     }
 }

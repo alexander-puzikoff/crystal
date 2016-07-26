@@ -12,7 +12,7 @@ import java.util.List;
  * @since <pre>07/26/2016</pre>
  */
 public class PriceUtils {
-    public static List<Price> correctInterceptedPrices(Price currentPrice, Price newPrice) {
+    public static void correctInterceptedPrices(Price currentPrice, Price newPrice) {
         if (currentPrice.getPriceInCents() == newPrice.getPriceInCents()) {
             if (currentPrice.getStartsFrom().after(newPrice.getStartsFrom())) {
                 currentPrice.setStartsFrom(newPrice.getStartsFrom());
@@ -20,18 +20,15 @@ public class PriceUtils {
             if (currentPrice.getEndsAt().before(newPrice.getEndsAt())) {
                 currentPrice.setEndsAt(newPrice.getEndsAt());
             }
-            return Arrays.asList(currentPrice);
         } else {
-            if (currentPrice.getEndsAt().after(newPrice.getStartsFrom())) {
+            if (currentPrice.getEndsAt().after(newPrice.getStartsFrom())
+                    && currentPrice.getStartsFrom().before(newPrice.getStartsFrom())) {
                 currentPrice.setEndsAt(newPrice.getStartsFrom());
-            }
-            if (currentPrice.getStartsFrom().before(newPrice.getEndsAt())) {
+            } else if (currentPrice.getStartsFrom().before(newPrice.getEndsAt()) &&
+                    currentPrice.getEndsAt().after(newPrice.getEndsAt())) {
                 currentPrice.setStartsFrom(newPrice.getEndsAt());
             }
-            return Arrays.asList(currentPrice, newPrice);
         }
-
-
     }
 
     public static Price splitPrices(Price newPrice, Price currentPrice) {
