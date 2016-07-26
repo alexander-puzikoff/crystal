@@ -6,10 +6,6 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-import static org.junit.Assert.*;
 
 /**
  * @author APuzikov
@@ -22,12 +18,12 @@ public class PriceTest {
 
     @Before
     public void setUp() throws ParseException {
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         oldPrice = new Price();
         oldPrice.setProductCode("1234");
         oldPrice.setNumber(2);
         oldPrice.setDepart(1);
         oldPrice.setPriceInCents(342432);
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         oldPrice.setStartsFrom(dateFormat.parse("2015-04-30 00:00:00"));
         oldPrice.setEndsAt(dateFormat.parse("2015-05-10 02:00:00"));
     }

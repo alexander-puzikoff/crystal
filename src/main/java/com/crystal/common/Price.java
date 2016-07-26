@@ -110,4 +110,29 @@ public class Price {
     public void setPriceInCents(long priceInCents) {
         this.priceInCents = priceInCents;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Price price = (Price) o;
+        if (getNumber() != price.getNumber()) return false;
+        if (getDepart() != price.getDepart()) return false;
+        if (getPriceInCents() != price.getPriceInCents()) return false;
+        if (!getProductCode().equals(price.getProductCode())) return false;
+        if (!getStartsFrom().equals(price.getStartsFrom())) return false;
+        return getEndsAt().equals(price.getEndsAt());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getProductCode().hashCode();
+        result = 31 * result + getNumber();
+        result = 31 * result + getDepart();
+        result = 31 * result + getStartsFrom().hashCode();
+        result = 31 * result + getEndsAt().hashCode();
+        result = 31 * result + (int) (getPriceInCents() ^ (getPriceInCents() >>> 32));
+        return result;
+    }
 }
