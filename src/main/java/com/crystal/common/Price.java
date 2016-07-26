@@ -13,19 +13,44 @@ public class Price {
     private Date startsFrom, endsAt;
     private long priceInCents;
 
+    public Price() {
+    }
+
+    public Price(Price newPrice) {
+        this.setStartsFrom(newPrice.getStartsFrom());
+        this.setEndsAt(newPrice.getEndsAt());
+        this.setDepart(newPrice.getDepart());
+        this.setNumber(newPrice.getNumber());
+        this.setPriceInCents(newPrice.getPriceInCents());
+        this.setProductCode(newPrice.getProductCode());
+    }
+
     public boolean isBefore(Price otherPrice) {
         return this.getStartsFrom().before(otherPrice.getStartsFrom()) &&
-                this.getEndsAt().before(otherPrice.getEndsAt());
+                this.getEndsAt().before(otherPrice.getStartsFrom());
     }
 
     public boolean isAfter(Price otherPrice) {
         return otherPrice.getStartsFrom().before(this.getStartsFrom()) &&
-                otherPrice.getEndsAt().before(this.getEndsAt());
+                otherPrice.getEndsAt().before(this.getStartsFrom());
     }
 
     public boolean isWhile(Price otherPrice) {
         return this.getStartsFrom().after(otherPrice.getStartsFrom()) &&
                 this.getEndsAt().before(otherPrice.getEndsAt());
+    }
+
+    public boolean isValidTimed() {
+        return this.getEndsAt().after(this.getStartsFrom()) && this.getEndsAt().compareTo(this.getStartsFrom()) != 0;
+    }
+
+    public boolean isIntercepts(Price otherPrice) {
+        return (this.getStartsFrom().before(otherPrice.getStartsFrom()) &&
+                this.getEndsAt().before(otherPrice.getEndsAt()) &&
+                this.getEndsAt().after(otherPrice.getStartsFrom())) ||
+                (this.getStartsFrom().after(otherPrice.getStartsFrom()) &&
+                        this.getStartsFrom().before(otherPrice.getEndsAt()) &&
+                        this.getEndsAt().after(otherPrice.getEndsAt()));
     }
 
 

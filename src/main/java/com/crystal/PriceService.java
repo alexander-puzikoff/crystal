@@ -1,7 +1,8 @@
 package com.crystal;
 
 import com.crystal.common.Price;
-import com.crystal.common.util.PriceComparator;
+import com.crystal.common.util.PriceUtils;
+import com.crystal.common.util.PriceByDateComparator;
 
 import java.util.*;
 
@@ -23,7 +24,7 @@ public class PriceService {
 
         for (Price price : newPrices) {
             if (!products.containsKey(price.getProductCode())) {
-                SortedSet<Price> currentPrices = new TreeSet<Price>(new PriceComparator());
+                SortedSet<Price> currentPrices = new TreeSet<Price>(new PriceByDateComparator());
                 currentPrices.add(price);
                 products.put(price.getProductCode(), currentPrices);
             } else {
@@ -31,28 +32,43 @@ public class PriceService {
             }
         }
 
-
-        return null;
+        List<Price> resultPrices = new LinkedList<Price>();
+        for (SortedSet<Price> prdcts : products.values()) {
+            resultPrices.addAll(prdcts);
+        }
+        return resultPrices;
     }
 
     private void addNewPrice(Map<String, SortedSet<Price>> products, Price newPrice) {
         Price[] prices = new Price[products.get(newPrice.getProductCode()).size()];
-
         products.get(newPrice.getProductCode()).toArray(prices);
-        for (int i = 0; i < prices.length - 1; i++) {
-            if (prices[i].isWhile(newPrice)) {
-
+        SortedSet<Price> newPricesForProduct = new TreeSet<Price>(new PriceByDateComparator());
+        boolean dirty = false;
+        for (Price currentPrice : prices) {
+            dirty = newPrice.isIntercepts(currentPrice);
+            if (dirty) {
+                PriceUtils.correctInterceptedPrices(currentPrice, newPrice);
+                continue;
+            }
+            dirty = dirty || newPrice.isWhile(currentPrice) || currentPrice.isWhile(newPrice);
+            if (dirty) {
+                Price minedPrice = PriceUtils.splitPrices(newPrice, currentPrice);
+                newPricesForProduct.add(minedPrice);
             }
         }
-
+        if (!dirty) {
+            Collections.addAll(newPricesForProduct, prices);
+            newPricesForProduct.add(newPrice);
+        }
     }
+
 
     private Map<String, SortedSet<Price>> convertPricesToMap(List<Price> prices) {
         Map<String, SortedSet<Price>> result = new HashMap<String, SortedSet<Price>>();
 
         for (Price price : prices) {
             if (!result.containsKey(price.getProductCode())) {
-                SortedSet<Price> currentPrices = new TreeSet<Price>(new PriceComparator());
+                SortedSet<Price> currentPrices = new TreeSet<Price>(new PriceByDateComparator());
                 currentPrices.add(price);
                 result.put(price.getProductCode(), currentPrices);
             } else {

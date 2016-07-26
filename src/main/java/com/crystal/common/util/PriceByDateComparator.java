@@ -7,7 +7,7 @@ import java.util.Comparator;
 /**
  * Created by alex on 25.07.16.
  */
-public class PriceComparator implements Comparator<Price> {
+public class PriceByDateComparator implements Comparator<Price> {
 
     public int compare(Price o1, Price o2) {
         if (o1.isBefore(o2)) {
