@@ -16,6 +16,15 @@ public class Price {
     public Price() {
     }
 
+    public Price(String productCode, int number, int depart, Date startsFrom, Date endsAt, long priceInCents) {
+        this.productCode = productCode;
+        this.number = number;
+        this.depart = depart;
+        this.startsFrom = startsFrom;
+        this.endsAt = endsAt;
+        this.priceInCents = priceInCents;
+    }
+
     public Price(Price newPrice) {
         this.setStartsFrom(newPrice.getStartsFrom());
         this.setEndsAt(newPrice.getEndsAt());
