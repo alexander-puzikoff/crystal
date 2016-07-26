@@ -10,13 +10,11 @@ import java.util.Comparator;
 public class PriceComparator implements Comparator<Price> {
 
     public int compare(Price o1, Price o2) {
-        if (o1.getStartsFrom().before(o2.getStartsFrom()) &&
-                o1.getEndsAt().before(o2.getEndsAt())) {
+        if (o1.isBefore(o2)) {
             return -1;
 
         }
-        if (o2.getStartsFrom().before(o1.getStartsFrom()) &&
-                o2.getEndsAt().before(o1.getEndsAt())) {
+        if (o1.isAfter(o2)) {
             return 1;
         }
         return 0;

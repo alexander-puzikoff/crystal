@@ -6,12 +6,28 @@ import java.util.Date;
 /**
  * Created by alex on 25.07.16.
  */
-public class Price{
+public class Price {
 
     private String productCode;
     private int number, depart;
     private Date startsFrom, endsAt;
     private long priceInCents;
+
+    public boolean isBefore(Price otherPrice) {
+        return this.getStartsFrom().before(otherPrice.getStartsFrom()) &&
+                this.getEndsAt().before(otherPrice.getEndsAt());
+    }
+
+    public boolean isAfter(Price otherPrice) {
+        return otherPrice.getStartsFrom().before(this.getStartsFrom()) &&
+                otherPrice.getEndsAt().before(this.getEndsAt());
+    }
+
+    public boolean isWhile(Price otherPrice) {
+        return this.getStartsFrom().after(otherPrice.getStartsFrom()) &&
+                this.getEndsAt().before(otherPrice.getEndsAt());
+    }
+
 
     public String getProductCode() {
         return productCode;

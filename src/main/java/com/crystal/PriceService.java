@@ -36,8 +36,14 @@ public class PriceService {
     }
 
     private void addNewPrice(Map<String, SortedSet<Price>> products, Price newPrice) {
-        for(products)
-        if(newPrice)
+        Price[] prices = new Price[products.get(newPrice.getProductCode()).size()];
+
+        products.get(newPrice.getProductCode()).toArray(prices);
+        for (int i = 0; i < prices.length - 1; i++) {
+            if (prices[i].isWhile(newPrice)) {
+
+            }
+        }
 
     }
 
