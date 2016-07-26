@@ -59,7 +59,14 @@ public class PriceService {
         if (!dirty) {
             Collections.addAll(newPricesForProduct, prices);
             newPricesForProduct.add(newPrice);
+            for (Iterator<Price> iter = newPricesForProduct.iterator(); iter.hasNext(); ) {
+                Price nextPrice = iter.next();
+                if (!nextPrice.isValidTimed()) {
+                    iter.remove();
+                }
+            }
         }
+        products.put(newPrice.getProductCode(), newPricesForProduct);
     }
 
 
