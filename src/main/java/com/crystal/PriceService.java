@@ -52,7 +52,9 @@ public class PriceService {
             }
             dirty = dirty || newPrice.isWhile(currentPrice) || currentPrice.isWhile(newPrice);
             if (dirty) {
-                Price minedPrice = PriceUtils.splitPrices(newPrice, currentPrice);
+                Price minedPrice = newPrice.getPriceInCents() ==
+                        currentPrice.getPriceInCents() ? PriceUtils.uniteSamePrices(newPrice, currentPrice) :
+                        PriceUtils.splitDifferentPrices(newPrice, currentPrice);
                 newPricesForProduct.add(minedPrice);
             }
         }

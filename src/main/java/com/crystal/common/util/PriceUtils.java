@@ -20,6 +20,7 @@ public class PriceUtils {
             if (currentPrice.getEndsAt().before(newPrice.getEndsAt())) {
                 currentPrice.setEndsAt(newPrice.getEndsAt());
             }
+            newPrice.setStartsFrom(newPrice.getEndsAt()); // invalid
         } else {
             if (currentPrice.getEndsAt().after(newPrice.getStartsFrom())
                     && currentPrice.getStartsFrom().before(newPrice.getStartsFrom())) {
@@ -31,21 +32,29 @@ public class PriceUtils {
         }
     }
 
-    public static Price splitPrices(Price newPrice, Price currentPrice) {
-        if (currentPrice.getPriceInCents() == newPrice.getPriceInCents()) {
-            return currentPrice.isWhile(newPrice) ? newPrice : currentPrice;
+    public static Price uniteSamePrices(Price newPrice, Price currentPrice) {
+        if (currentPrice.isWhile(newPrice)) {
+            currentPrice.setStartsFrom(currentPrice.getEndsAt());
+            return newPrice;
         } else {
-            Price newNewPrice = null;
-            if (currentPrice.isWhile(newPrice)) {
-                newNewPrice = new Price(newPrice);
-                newPrice.setEndsAt(currentPrice.getStartsFrom());
-                newNewPrice.setStartsFrom(currentPrice.getEndsAt());
-            } else {
-                newNewPrice = new Price(currentPrice);
-                currentPrice.setEndsAt(newPrice.getStartsFrom());
-                newNewPrice.setStartsFrom(newPrice.getEndsAt());
-            }
-            return newNewPrice;
+            newPrice.setStartsFrom(newPrice.getEndsAt());
+            return currentPrice;
         }
     }
+
+    public static Price splitDifferentPrices(Price newPrice, Price currentPrice) {
+
+        Price newNewPrice = null;
+        if (currentPrice.isWhile(newPrice)) {
+            newNewPrice = new Price(newPrice);
+            newPrice.setEndsAt(currentPrice.getStartsFrom());
+            newNewPrice.setStartsFrom(currentPrice.getEndsAt());
+        } else {
+            newNewPrice = new Price(currentPrice);
+            currentPrice.setEndsAt(newPrice.getStartsFrom());
+            newNewPrice.setStartsFrom(newPrice.getEndsAt());
+        }
+        return newNewPrice;
+    }
+
 }
