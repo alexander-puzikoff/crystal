@@ -51,6 +51,13 @@ public class PriceTest {
         newPrice.setStartsFrom(dateFormat.parse("2015-05-05 00:00:00"));
         newPrice.setEndsAt(dateFormat.parse("2015-05-05 15:00:00"));
         Assert.assertTrue(newPrice.isWhile(oldPrice));
+    }
+
+    @Test
+    public void testIsNotWhile() throws Exception {
+        Price newPrice = new Price(oldPrice);
+        newPrice.setStartsFrom(dateFormat.parse("2015-05-05 00:00:00"));
+        newPrice.setEndsAt(dateFormat.parse("2015-05-05 15:00:00"));
         Assert.assertTrue(!oldPrice.isWhile(newPrice));
     }
 
@@ -60,18 +67,30 @@ public class PriceTest {
     }
 
     @Test
-    public void testIsNotValidTimed() throws Exception {
+    public void testIsNotValidTimedWithEqualsDates() throws Exception {
         oldPrice.setEndsAt(oldPrice.getStartsFrom());
-        Assert.assertTrue(!oldPrice.isValidTimed());
-        oldPrice.setStartsFrom(dateFormat.parse("2015-05-30 00:00:00"));
         Assert.assertTrue(!oldPrice.isValidTimed());
     }
 
     @Test
-    public void testIsIntercepts() throws Exception {
+    public void testIsNotValidTimedWithImpossibleDate() throws Exception {
+        oldPrice.setStartsFrom(dateFormat.parse("2015-05-30 00:00:00")); // end 05-10
+        Assert.assertTrue(!oldPrice.isValidTimed());
+    }
+
+    @Test
+    public void testIsInterceptsVice() throws Exception {
         Price newPrice = new Price(oldPrice);
         newPrice.setStartsFrom(dateFormat.parse("2015-05-05 00:00:00"));
         newPrice.setEndsAt(dateFormat.parse("2015-05-15 15:00:00"));
-        Assert.assertTrue(newPrice.isIntercepts(oldPrice) && oldPrice.isIntercepts(newPrice));
+        Assert.assertTrue(newPrice.isIntercepts(oldPrice));
+    }
+
+    @Test
+    public void testIsInterceptsVerca() throws Exception {
+        Price newPrice = new Price(oldPrice);
+        newPrice.setStartsFrom(dateFormat.parse("2015-05-05 00:00:00"));
+        newPrice.setEndsAt(dateFormat.parse("2015-05-15 15:00:00"));
+        Assert.assertTrue(oldPrice.isIntercepts(newPrice));
     }
 }

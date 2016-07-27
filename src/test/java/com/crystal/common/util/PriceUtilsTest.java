@@ -47,7 +47,7 @@ public class PriceUtilsTest {
     }
 
     @Test
-    public void testUniteInterceptedPricesWithSamePrices() throws Exception {
+    public void testUniteInterceptedWithSamePrices() throws Exception {
         Date oldSt = dateFormat.parse("2011-11-13 23:30:00");
         long priceForProduct = 129900;
         Price oldPrice = new Price("14", 3, 1, oldSt, dateFormat.parse("2011-11-16 02:00:00"),
@@ -58,6 +58,17 @@ public class PriceUtilsTest {
         PriceUtils.correctInterceptedPrices(oldPrice, newPrice);
         Assert.assertTrue(oldPrice.getStartsFrom().equals(copyOld.getStartsFrom()));
         Assert.assertTrue(oldPrice.getEndsAt().equals(copyNew.getEndsAt()));
+    }
+
+    @Test
+    public void testUniteInterceptedWithSamePricesNewIvalid() throws Exception {
+        Date oldSt = dateFormat.parse("2011-11-13 23:30:00");
+        long priceForProduct = 129900;
+        Price oldPrice = new Price("14", 3, 1, oldSt, dateFormat.parse("2011-11-16 02:00:00"),
+                priceForProduct);
+        Price newPrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
+                dateFormat.parse("2011-12-03 13:30:00"), priceForProduct);
+        PriceUtils.correctInterceptedPrices(oldPrice, newPrice);
         Assert.assertTrue(!newPrice.isValidTimed());
     }
 
@@ -74,18 +85,30 @@ public class PriceUtilsTest {
     }
 
     @Test
-    public void testUnitePricesWithSamePrices() throws Exception {
+    public void testUniteWithSamePricesInsideInvalid() throws Exception {
         Date oldSt = dateFormat.parse("2011-11-13 23:30:00");
         long priceForProduct = 129900;
         Price outsidePrice = new Price("14", 3, 1, oldSt, dateFormat.parse("2011-12-14 02:00:00"),
                 priceForProduct);
         Price insidePrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
                 dateFormat.parse("2011-12-03 13:30:00"), priceForProduct);
-        Price copyInside = new Price(insidePrice), copyOutside = new Price(outsidePrice);
+        PriceUtils.uniteSamePrices(insidePrice, outsidePrice);
+        Assert.assertTrue(!insidePrice.isValidTimed());
+    }
+
+
+    @Test
+    public void testUniteWithSamePrices() throws Exception {
+        Date oldSt = dateFormat.parse("2011-11-13 23:30:00");
+        long priceForProduct = 129900;
+        Price outsidePrice = new Price("14", 3, 1, oldSt, dateFormat.parse("2011-12-14 02:00:00"),
+                priceForProduct);
+        Price insidePrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
+                dateFormat.parse("2011-12-03 13:30:00"), priceForProduct);
+        Price copyOutside = new Price(outsidePrice);
         Price resultedPrice = PriceUtils.uniteSamePrices(insidePrice, outsidePrice);
         Assert.assertTrue(resultedPrice.getStartsFrom().equals(copyOutside.getStartsFrom()));
         Assert.assertTrue(resultedPrice.getEndsAt().equals(copyOutside.getEndsAt()));
-        Assert.assertTrue(!insidePrice.isValidTimed());
         Assert.assertTrue(resultedPrice.equals(copyOutside));
     }
 }
