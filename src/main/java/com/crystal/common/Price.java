@@ -135,4 +135,16 @@ public class Price {
         result = 31 * result + (int) (getPriceInCents() ^ (getPriceInCents() >>> 32));
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Price{" +
+                "productCode='" + productCode + '\'' +
+                ", number=" + number +
+                ", depart=" + depart +
+                ", startsFrom=" + startsFrom +
+                ", endsAt=" + endsAt +
+                ", priceInCents=" + priceInCents +
+                '}';
+    }
 }
