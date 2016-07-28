@@ -20,7 +20,7 @@ public class PriceServiceTest {
     public void startUp() throws ParseException {
         oldPrices = new LinkedList<Price>();
         newPrices = new LinkedList<Price>();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
         oldPrices.add(new Price("122856",
                 1,
                 1,
@@ -69,6 +69,7 @@ public class PriceServiceTest {
     public void testAggregatePrices() throws Exception {
         PriceService priceService = new PriceService();
         List<Price> resultPrices = priceService.aggregatePrices(oldPrices, newPrices);
-        System.out.println(resultPrices);
+        for (Price price : resultPrices)
+            System.out.println(price);
     }
 }

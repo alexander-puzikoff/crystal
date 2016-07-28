@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Created by alex on 25.07.16.
  */
-public class Price {
+public class Price implements Comparable {
 
     private String productCode;
     private int number, depart;
@@ -35,31 +35,37 @@ public class Price {
     }
 
     public boolean isBefore(Price otherPrice) {
-        return this.getStartsFrom().before(otherPrice.getStartsFrom()) &&
-                this.getEndsAt().before(otherPrice.getStartsFrom());
+        return (this.getStartsFrom().before(otherPrice.getStartsFrom()) || this.getStartsFrom().equals(otherPrice.getStartsFrom())) &&
+                (this.getEndsAt().before(otherPrice.getStartsFrom()) || this.getEndsAt().equals(otherPrice.getStartsFrom()));
     }
 
     public boolean isAfter(Price otherPrice) {
-        return otherPrice.getStartsFrom().before(this.getStartsFrom()) &&
-                otherPrice.getEndsAt().before(this.getStartsFrom());
+        return (otherPrice.getStartsFrom().equals(this.getStartsFrom()) || otherPrice.getStartsFrom().before(this.getStartsFrom()))
+                && (otherPrice.getEndsAt().before(this.getStartsFrom()) || otherPrice.getEndsAt().equals(this.getStartsFrom()));
     }
 
     public boolean isWhile(Price otherPrice) {
-        return this.getStartsFrom().after(otherPrice.getStartsFrom()) &&
-                this.getEndsAt().before(otherPrice.getEndsAt());
+        return (this.getStartsFrom().after(otherPrice.getStartsFrom()) || this.getStartsFrom().equals(otherPrice.getStartsFrom())) &&
+                (this.getEndsAt().before(otherPrice.getEndsAt()) || this.getEndsAt().equals(otherPrice.getEndsAt()));
     }
 
     public boolean isValidTimed() {
-        return this.getEndsAt().after(this.getStartsFrom()) && this.getEndsAt().compareTo(this.getStartsFrom()) != 0;
+        return this.getEndsAt().after(this.getStartsFrom()) && !this.getEndsAt().equals(this.getStartsFrom());
     }
 
     public boolean isIntercepts(Price otherPrice) {
-        return (this.getStartsFrom().before(otherPrice.getStartsFrom()) &&
-                this.getEndsAt().before(otherPrice.getEndsAt()) &&
-                this.getEndsAt().after(otherPrice.getStartsFrom())) ||
-                (this.getStartsFrom().after(otherPrice.getStartsFrom()) &&
-                        this.getStartsFrom().before(otherPrice.getEndsAt()) &&
-                        this.getEndsAt().after(otherPrice.getEndsAt()));
+        return ((this.getStartsFrom().before(otherPrice.getStartsFrom())
+                || this.getStartsFrom().equals(otherPrice.getStartsFrom())) &&
+                (this.getEndsAt().before(otherPrice.getEndsAt())
+                        || this.getEndsAt().equals(otherPrice.getEndsAt())) &&
+                (this.getEndsAt().after(otherPrice.getStartsFrom()) ||
+                        this.getEndsAt().equals(otherPrice.getStartsFrom())) ||
+                ((this.getStartsFrom().after(otherPrice.getStartsFrom())
+                        || this.getEndsAt().equals(otherPrice.getStartsFrom())) &&
+                        (this.getStartsFrom().before(otherPrice.getEndsAt())
+                                || this.getStartsFrom().equals(otherPrice.getEndsAt())) &&
+                        (this.getEndsAt().after(otherPrice.getEndsAt())
+                                || this.getEndsAt().equals(otherPrice.getEndsAt()))));
     }
 
 
@@ -146,5 +152,14 @@ public class Price {
                 ", endsAt=" + endsAt +
                 ", priceInCents=" + priceInCents +
                 '}';
+    }
+
+    public int compareTo(Object o) {
+        Price to = (Price) o;
+        if (to.getStartsFrom().after(this.getStartsFrom())) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 }

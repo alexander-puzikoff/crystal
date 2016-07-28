@@ -21,7 +21,7 @@ public class PriceByDateComparatorTest {
         Price newPrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
                 dateFormat.parse("2011-12-03 13:30:00"), 129900);
         Comparator priceComparator = new PriceByDateComparator();
-        Assert.assertEquals(0, priceComparator.compare(oldPrice, newPrice));
+        Assert.assertEquals(-1, priceComparator.compare(oldPrice, newPrice));
     }
 
     @Test

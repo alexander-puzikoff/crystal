@@ -17,6 +17,9 @@ public class PriceByDateComparator implements Comparator<Price> {
         if (o1.isAfter(o2)) {
             return 1;
         }
+        if (o1.getStartsFrom().before(o2.getStartsFrom())) {
+            return -1;
+        }
         return 0;
     }
 
