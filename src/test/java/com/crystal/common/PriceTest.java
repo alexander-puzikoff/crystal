@@ -93,4 +93,20 @@ public class PriceTest {
         newPrice.setEndsAt(dateFormat.parse("2015-05-15 15:00:00"));
         Assert.assertTrue(oldPrice.isIntercepts(newPrice));
     }
+
+    @Test
+    public void testIsNotIntercepts() throws Exception {
+        Price newPrice = new Price(oldPrice);
+        newPrice.setStartsFrom(dateFormat.parse("2011-05-05 00:00:00"));
+        newPrice.setEndsAt(dateFormat.parse("2011-05-15 15:00:00"));
+        Assert.assertTrue(!oldPrice.isIntercepts(newPrice));
+    }
+
+    @Test
+    public void testIsInterceptsNeighbours() throws Exception {
+        Price oldPrice = new Price("14", 3, 1, dateFormat.parse("2011-10-16 02:00:00") , dateFormat.parse("2011-11-16 02:00:00"), 149900);
+        Price newPrice = new Price("14", 3, 1, dateFormat.parse("2011-11-16 02:00:00"),
+                dateFormat.parse("2011-12-03 13:30:00"), 129900);
+        Assert.assertTrue(newPrice.isIntercepts(oldPrice));
+    }
 }

@@ -38,13 +38,42 @@ public class PriceUtilsTest {
         Price newPrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
                 dateFormat.parse("2011-12-03 13:30:00"), 129900);
         PriceUtils.correctInterceptedPrices(oldPrice, newPrice);
-        Assert.assertTrue(oldPrice.getEndsAt().equals(newPrice.getStartsFrom()));
-        Assert.assertTrue(oldPrice.getStartsFrom().equals(oldSt));
-        Price newPrice2 = new Price("14", 3, 1, dateFormat.parse("2011-11-13 13:30:00"), dateFormat.parse("2011-11-23 13:30:00"), 32900);
-        PriceUtils.correctInterceptedPrices(newPrice, newPrice2);
-        Assert.assertTrue(newPrice.getStartsFrom().equals(newPrice2.getEndsAt()));
+        Assert.assertTrue("Old early price didn't update its end", oldPrice.getEndsAt().equals(newPrice.getStartsFrom()));
+        Assert.assertTrue("Old early price didn't save its start", oldPrice.getStartsFrom().equals(oldSt));
 
     }
+
+    @Test
+    public void testCorrectInterceptedPricesInverted() throws Exception {
+        Price oldPrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
+                dateFormat.parse("2011-12-03 13:30:00"), 129900);
+        Price newPrice = new Price("14", 3, 1, dateFormat.parse("2011-11-13 13:30:00"), dateFormat.parse("2011-11-23 13:30:00"), 32900);
+        PriceUtils.correctInterceptedPrices(oldPrice, newPrice);
+        Assert.assertTrue("Old price didn't update its start", oldPrice.getStartsFrom().equals(newPrice.getEndsAt()));
+    }
+
+    @Test
+    public void testNeighboursWithSamePrice() throws Exception {
+        Price[] neighbours = prepareNeighboursWithSamePrice();
+        Date startsFrom = neighbours[0].getStartsFrom();
+        Price newPriceCopy = new Price(neighbours[1]);
+        PriceUtils.correctInterceptedPrices(neighbours[0], neighbours[1]);
+        Assert.assertTrue("2st price is valid", !neighbours[1].isValidTimed());
+        Assert.assertEquals("Early price didn't update its end", neighbours[0].getEndsAt(), newPriceCopy.getEndsAt());
+        Assert.assertEquals("Early price didn't save its start", neighbours[0].getStartsFrom(), startsFrom);
+    }
+
+    @Test
+    public void testNeighboursWithSamePriceInverted() throws Exception {
+        Price[] neighbours = prepareNeighboursWithSamePrice();
+        Date endsAt = neighbours[1].getEndsAt();
+        Price oldPriceCopy = new Price(neighbours[0]);
+        PriceUtils.correctInterceptedPrices(neighbours[1], neighbours[0]);
+        Assert.assertTrue("2st price is valid", !neighbours[0].isValidTimed());
+        Assert.assertEquals("Late price didn't update start time", neighbours[1].getStartsFrom(), oldPriceCopy.getStartsFrom());
+        Assert.assertEquals("Late price didn't saved end time", neighbours[1].getEndsAt(), endsAt);
+    }
+
 
     @Test
     public void testUniteInterceptedWithSamePrices() throws Exception {
@@ -56,8 +85,8 @@ public class PriceUtilsTest {
                 dateFormat.parse("2011-12-03 13:30:00"), priceForProduct);
         Price copyOld = new Price(oldPrice), copyNew = new Price(newPrice);
         PriceUtils.correctInterceptedPrices(oldPrice, newPrice);
-        Assert.assertTrue(oldPrice.getStartsFrom().equals(copyOld.getStartsFrom()));
-        Assert.assertTrue(oldPrice.getEndsAt().equals(copyNew.getEndsAt()));
+        Assert.assertTrue("1st price aint saved it's start value", oldPrice.getStartsFrom().equals(copyOld.getStartsFrom()));
+        Assert.assertTrue("1st price and prolonged to 2nd", oldPrice.getEndsAt().equals(copyNew.getEndsAt()));
     }
 
     @Test
@@ -79,9 +108,9 @@ public class PriceUtilsTest {
         Price insidePrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"), dateFormat.parse("2011-12-03 13:30:00"), 129900);
         Price copyInside = new Price(insidePrice), copyOutside = new Price(outsidePrice);
         Price resultedPrice = PriceUtils.splitDifferentPrices(insidePrice, outsidePrice);
-        Assert.assertTrue(resultedPrice.getStartsFrom().equals(copyInside.getEndsAt()));
-        Assert.assertTrue(resultedPrice.getEndsAt().equals(copyOutside.getEndsAt()));
-        Assert.assertTrue(outsidePrice.getEndsAt().equals(copyInside.getStartsFrom()));
+        Assert.assertTrue("3rd price ain't  after 2nd", resultedPrice.getStartsFrom().equals(copyInside.getEndsAt()));
+        Assert.assertTrue("3rd price ain't stops where it should", resultedPrice.getEndsAt().equals(copyOutside.getEndsAt()));
+        Assert.assertTrue("2nd price ain't after 1rst", outsidePrice.getEndsAt().equals(copyInside.getStartsFrom()));
     }
 
     @Test
@@ -106,9 +135,17 @@ public class PriceUtilsTest {
         Price insidePrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
                 dateFormat.parse("2011-12-03 13:30:00"), priceForProduct);
         Price copyOutside = new Price(outsidePrice);
-        Price resultedPrice = PriceUtils.uniteSamePrices(insidePrice, outsidePrice);
-        Assert.assertTrue(resultedPrice.getStartsFrom().equals(copyOutside.getStartsFrom()));
-        Assert.assertTrue(resultedPrice.getEndsAt().equals(copyOutside.getEndsAt()));
-        Assert.assertTrue(resultedPrice.equals(copyOutside));
+        PriceUtils.uniteSamePrices(insidePrice, outsidePrice);
+        Assert.assertTrue("Inside price wasn't annihilated", !insidePrice.isValidTimed());
+        Assert.assertTrue("Outside price changed it's value", outsidePrice.equals(copyOutside));
     }
+
+
+    private Price[] prepareNeighboursWithSamePrice() throws ParseException {
+        Price oldPrice = new Price("14", 3, 1, dateFormat.parse("2011-10-16 02:00:00"), dateFormat.parse("2011-11-16 02:00:00"), 129900);
+        Price newPrice = new Price("14", 3, 1, dateFormat.parse("2011-11-16 02:00:00"),
+                dateFormat.parse("2011-12-03 13:30:00"), 129900);
+        return new Price[]{oldPrice, newPrice};
+    }
+
 }
