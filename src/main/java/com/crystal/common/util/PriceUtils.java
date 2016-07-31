@@ -43,7 +43,6 @@ public class PriceUtils {
     }
 
     public static Price splitDifferentPrices(Price newPrice, Price currentPrice) {
-
         Price newNewPrice = null;
         if (currentPrice.isWhile(newPrice)) {
             newNewPrice = new Price(newPrice);

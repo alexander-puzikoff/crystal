@@ -48,7 +48,10 @@ public class PriceService {
         SortedSet<Price> newPricesForProduct = new TreeSet<Price>();
         boolean dirty = false;
         for (Price currentPrice : prices) {
-            if (currentPrice.getNumber() == newPrice.getNumber()) {
+            if (currentPrice.getNumber() == newPrice.getNumber()
+                    // TODO: comment next line in case prices is equal for all depts
+                    && currentPrice.getDepart() == newPrice.getDepart()
+            ) {
                 dirty = newPrice.isIntercepts(currentPrice) && newPrice.isValidTimed();
                 if (dirty) {
                     PriceUtils.correctInterceptedPrices(currentPrice, newPrice);

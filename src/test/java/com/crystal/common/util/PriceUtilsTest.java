@@ -111,6 +111,7 @@ public class PriceUtilsTest {
         Assert.assertTrue("3rd price ain't  after 2nd", resultedPrice.getStartsFrom().equals(copyInside.getEndsAt()));
         Assert.assertTrue("3rd price ain't stops where it should", resultedPrice.getEndsAt().equals(copyOutside.getEndsAt()));
         Assert.assertTrue("2nd price ain't after 1rst", outsidePrice.getEndsAt().equals(copyInside.getStartsFrom()));
+        Assert.assertEquals("2nd price ain't saved inner price", copyInside.getPriceInCents(), insidePrice.getPriceInCents());
     }
 
     @Test
