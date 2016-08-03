@@ -58,7 +58,7 @@ public class PriceUtilsTest {
         Date startsFrom = neighbours[0].getStartsFrom();
         Price newPriceCopy = new Price(neighbours[1]);
         PriceUtils.correctInterceptedPrices(neighbours[0], neighbours[1]);
-        Assert.assertTrue("2st price is valid", !neighbours[1].isValidTimed());
+        Assert.assertFalse("2st price is valid", neighbours[1].isValidTimed());
         Assert.assertEquals("Early price didn't update its end", neighbours[0].getEndsAt(), newPriceCopy.getEndsAt());
         Assert.assertEquals("Early price didn't save its start", neighbours[0].getStartsFrom(), startsFrom);
     }
@@ -98,7 +98,7 @@ public class PriceUtilsTest {
         Price newPrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
                 dateFormat.parse("2011-12-03 13:30:00"), priceForProduct);
         PriceUtils.correctInterceptedPrices(oldPrice, newPrice);
-        Assert.assertTrue(!newPrice.isValidTimed());
+        Assert.assertFalse(newPrice.isValidTimed());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class PriceUtilsTest {
         Price insidePrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
                 dateFormat.parse("2011-12-03 13:30:00"), priceForProduct);
         PriceUtils.uniteSamePrices(insidePrice, outsidePrice);
-        Assert.assertTrue(!insidePrice.isValidTimed());
+        Assert.assertFalse(insidePrice.isValidTimed());
     }
 
 
@@ -137,7 +137,21 @@ public class PriceUtilsTest {
                 dateFormat.parse("2011-12-03 13:30:00"), priceForProduct);
         Price copyOutside = new Price(outsidePrice);
         PriceUtils.uniteSamePrices(insidePrice, outsidePrice);
-        Assert.assertTrue("Inside price wasn't annihilated", !insidePrice.isValidTimed());
+        Assert.assertFalse("Inside price wasn't annihilated", insidePrice.isValidTimed());
+        Assert.assertTrue("Outside price changed it's value", outsidePrice.equals(copyOutside));
+    }
+
+    @Test
+    public void testUniteWithSamePricesInverted() throws Exception {
+        Date oldSt = dateFormat.parse("2011-11-13 23:30:00");
+        long priceForProduct = 129900;
+        Price outsidePrice = new Price("14", 3, 1, oldSt, dateFormat.parse("2011-12-14 02:00:00"),
+                priceForProduct);
+        Price insidePrice = new Price("14", 3, 1, dateFormat.parse("2011-11-14 13:30:00"),
+                dateFormat.parse("2011-12-03 13:30:00"), priceForProduct);
+        Price copyOutside = new Price(outsidePrice);
+        PriceUtils.uniteSamePrices(outsidePrice, insidePrice);
+        Assert.assertFalse("Inside price wasn't annihilated", insidePrice.isValidTimed());
         Assert.assertTrue("Outside price changed it's value", outsidePrice.equals(copyOutside));
     }
 

@@ -17,6 +17,12 @@ public class PriceService {
         if (oldPrices != null && newPrices == null) {
             return oldPrices;
         }
+        if (oldPrices == null && newPrices != null) {
+            return newPrices;
+        }
+        if (oldPrices == null && newPrices == null) {
+            return null;
+        }
 
 
         Map<String, SortedSet<Price>> products = convertPricesToMap(oldPrices);

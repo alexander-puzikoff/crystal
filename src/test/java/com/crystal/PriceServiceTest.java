@@ -2,6 +2,7 @@ package com.crystal;
 
 import com.crystal.common.Price;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -19,12 +20,16 @@ public class PriceServiceTest {
     private List<Price> newPrices = null;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
 
-    @Test
-    public void test1AggregateSamePricesInside() throws Exception {
+    @Before
+    public void startUp(){
         oldPrices = new LinkedList<Price>();
+        newPrices = new LinkedList<Price>();
+    }
+
+    @Test
+    public void testAggregateSamePricesInside() throws Exception {
         oldPrices.add(new Price("122856", 1, 1, dateFormat.parse("01.01.2013 00:00:00"),
                 dateFormat.parse("31.01.2013 23:59:59"), 11000));
-        newPrices = new LinkedList<Price>();
         newPrices.add(new Price("122856", 1, 1, dateFormat.parse("05.01.2013 00:00:00"),
                 dateFormat.parse("15.01.2013 23:59:59"), 11000));
         List<Price> exptectedPrices = new LinkedList<Price>();
@@ -33,6 +38,37 @@ public class PriceServiceTest {
         PriceService priceService = new PriceService();
         List<Price> resultPrices = priceService.aggregatePrices(oldPrices, newPrices);
         Assert.assertThat(exptectedPrices, is(resultPrices));
+    }
+
+    @Test
+    public void testAggregateWithNullInside() throws Exception {
+        Exception expected = null;
+        oldPrices.add(new Price("122856", 1, 1, null,
+                dateFormat.parse("31.01.2013 23:59:59"), 11000));
+        newPrices.add(new Price("122856", 1, 1, dateFormat.parse("05.01.2013 00:00:00"),
+                dateFormat.parse("15.01.2013 23:59:59"), 11000));
+        List<Price> exptectedPrices = new LinkedList<Price>();
+        exptectedPrices.add(new Price("122856", 1, 1, dateFormat.parse("01.01.2013 00:00:00"),
+                dateFormat.parse("31.01.2013 23:59:59"), 11000));
+        PriceService priceService = new PriceService();
+        try{
+            List<Price> resultPrices = priceService.aggregatePrices(oldPrices, newPrices);
+        }catch (Exception ex){
+            expected = ex;
+        }
+        Assert.assertTrue(expected instanceof  NullPointerException);
+    }
+
+    @Test
+    public void nullInputTest() throws ParseException {
+        PriceService priceService = new PriceService();
+        List<Price> resultPrices = priceService.aggregatePrices(null, newPrices);
+        Assert.assertEquals(resultPrices, newPrices);
+        newPrices.add(new Price("122856", 1, 1, dateFormat.parse("05.01.2013 00:00:00"),
+                dateFormat.parse("15.01.2013 23:59:59"), 11000));
+        resultPrices = priceService.aggregatePrices(newPrices, null);
+        Assert.assertEquals(resultPrices, newPrices);
+        Assert.assertNull(priceService.aggregatePrices(null, null));
     }
 
     @Test
@@ -48,15 +84,13 @@ public class PriceServiceTest {
         prepareForTest2();
         PriceService priceService = new PriceService();
         List<Price> resultPrices = priceService.aggregatePrices(oldPrices, newPrices);
-        for(Price p : resultsForTest2())
+        for (Price p : resultsForTest2())
             System.out.println(p);
         Assert.assertThat(resultsForTest2(), is(resultPrices));
     }
 
 
     private void prepareForTest1() throws ParseException {
-        oldPrices = new LinkedList<Price>();
-        newPrices = new LinkedList<Price>();
         oldPrices.add(new Price("122856", 1, 1, dateFormat.parse("01.01.2013 00:00:00"),
                 dateFormat.parse("31.01.2013 23:59:59"), 11000));
         oldPrices.add(new Price("122856", 2, 1, dateFormat.parse("10.01.2013 00:00:00"),
