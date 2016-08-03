@@ -156,6 +156,9 @@ public class Price implements Comparable {
 
     public int compareTo(Object o) {
         Price to = (Price) o;
+        if(o.equals(this)){
+            return  0;
+        }
         if (to.getStartsFrom().after(this.getStartsFrom())) {
             return -1;
         } else {

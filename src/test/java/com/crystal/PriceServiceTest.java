@@ -19,6 +19,21 @@ public class PriceServiceTest {
     private List<Price> newPrices = null;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
 
+    @Test
+    public void test1AggregateSamePricesInside() throws Exception {
+        oldPrices = new LinkedList<Price>();
+        oldPrices.add(new Price("122856", 1, 1, dateFormat.parse("01.01.2013 00:00:00"),
+                dateFormat.parse("31.01.2013 23:59:59"), 11000));
+        newPrices = new LinkedList<Price>();
+        newPrices.add(new Price("122856", 1, 1, dateFormat.parse("05.01.2013 00:00:00"),
+                dateFormat.parse("15.01.2013 23:59:59"), 11000));
+        List<Price> exptectedPrices = new LinkedList<Price>();
+        exptectedPrices.add(new Price("122856", 1, 1, dateFormat.parse("01.01.2013 00:00:00"),
+                dateFormat.parse("31.01.2013 23:59:59"), 11000));
+        PriceService priceService = new PriceService();
+        List<Price> resultPrices = priceService.aggregatePrices(oldPrices, newPrices);
+        Assert.assertThat(exptectedPrices, is(resultPrices));
+    }
 
     @Test
     public void test1AggregatePrices() throws Exception {
