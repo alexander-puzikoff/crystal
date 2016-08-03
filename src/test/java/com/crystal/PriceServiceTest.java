@@ -151,6 +151,4 @@ public class PriceServiceTest {
                 dateFormat.parse("27.08.2016 00:00:00"), 2500));
         return resultedPrices;
     }
-
-
 }

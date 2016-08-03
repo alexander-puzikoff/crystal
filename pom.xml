@@ -14,7 +14,38 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.pitest/pitest -->
+        <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest</artifactId>
+            <version>1.1.10</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.testng/testng -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.9.10</version>
+        </dependency>
+
+
     </dependencies>
 
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <mutators>
+                        <mutator>ALL</mutator>
+                    </mutators>
+                    <threads>10</threads>
+                    <targetClasses>
+                        <param>com.crystal*</param>
+                    </targetClasses>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
