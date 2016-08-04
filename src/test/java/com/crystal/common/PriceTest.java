@@ -34,6 +34,7 @@ public class PriceTest {
         newPrice.setStartsFrom(dateFormat.parse("2015-05-11 00:00:00"));
         newPrice.setEndsAt(dateFormat.parse("2015-05-12 01:00:00"));
         Assert.assertTrue(oldPrice.isBefore(newPrice));
+        Assert.assertFalse(newPrice.isBefore(oldPrice));
     }
 
     @Test
@@ -42,7 +43,7 @@ public class PriceTest {
         newPrice.setStartsFrom(dateFormat.parse("2015-05-11 00:00:00"));
         newPrice.setEndsAt(dateFormat.parse("2015-05-12 01:00:00"));
         Assert.assertTrue(newPrice.isAfter(oldPrice));
-
+        Assert.assertFalse(oldPrice.isAfter(newPrice));
     }
 
     @Test
@@ -54,11 +55,25 @@ public class PriceTest {
     }
 
     @Test
+    public void testIsWhileWithNull() throws Exception {
+        Exception exception = null;
+        Price newPrice = new Price(oldPrice);
+        newPrice.setStartsFrom(null);
+        newPrice.setEndsAt(dateFormat.parse("2015-05-05 15:00:00"));
+        try{
+            newPrice.isWhile(oldPrice);
+        }catch (Exception ex){
+            exception = ex;
+        }
+        Assert.assertTrue(exception instanceof NullPointerException);
+    }
+
+    @Test
     public void testIsNotWhile() throws Exception {
         Price newPrice = new Price(oldPrice);
         newPrice.setStartsFrom(dateFormat.parse("2015-05-05 00:00:00"));
         newPrice.setEndsAt(dateFormat.parse("2015-05-05 15:00:00"));
-        Assert.assertTrue(!oldPrice.isWhile(newPrice));
+        Assert.assertFalse(oldPrice.isWhile(newPrice));
     }
 
     @Test
@@ -69,13 +84,13 @@ public class PriceTest {
     @Test
     public void testIsNotValidTimedWithEqualsDates() throws Exception {
         oldPrice.setEndsAt(oldPrice.getStartsFrom());
-        Assert.assertTrue(!oldPrice.isValidTimed());
+        Assert.assertFalse(oldPrice.isValidTimed());
     }
 
     @Test
     public void testIsNotValidTimedWithImpossibleDate() throws Exception {
         oldPrice.setStartsFrom(dateFormat.parse("2015-05-30 00:00:00")); // end 05-10
-        Assert.assertTrue(!oldPrice.isValidTimed());
+        Assert.assertFalse(oldPrice.isValidTimed());
     }
 
     @Test
@@ -99,12 +114,12 @@ public class PriceTest {
         Price newPrice = new Price(oldPrice);
         newPrice.setStartsFrom(dateFormat.parse("2011-05-05 00:00:00"));
         newPrice.setEndsAt(dateFormat.parse("2011-05-15 15:00:00"));
-        Assert.assertTrue(!oldPrice.isIntercepts(newPrice));
+        Assert.assertFalse(oldPrice.isIntercepts(newPrice));
     }
 
     @Test
     public void testIsInterceptsNeighbours() throws Exception {
-        Price oldPrice = new Price("14", 3, 1, dateFormat.parse("2011-10-16 02:00:00") , dateFormat.parse("2011-11-16 02:00:00"), 149900);
+        Price oldPrice = new Price("14", 3, 1, dateFormat.parse("2011-10-16 02:00:00"), dateFormat.parse("2011-11-16 02:00:00"), 149900);
         Price newPrice = new Price("14", 3, 1, dateFormat.parse("2011-11-16 02:00:00"),
                 dateFormat.parse("2011-12-03 13:30:00"), 129900);
         Assert.assertTrue(newPrice.isIntercepts(oldPrice));
